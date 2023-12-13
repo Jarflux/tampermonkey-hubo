@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Ticket buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @description  Redmine - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/issues/*
