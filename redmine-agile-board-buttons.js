@@ -6,8 +6,8 @@
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/omnichannel-hubomat/agile/board*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hubo.be
-// @downloadURL  https://raw.githubusercontent.com/Jarflux/tampermonkey-hubo/master/redmine-agile-board-buttons.js
-// @updateURL    https://raw.githubusercontent.com/Jarflux/tampermonkey-hubo/master/redmine-agile-board-buttons.js
+// @downloadURL  https://github.com/Jarflux/tampermonkey-hubo/raw/master/redmine-agile-board-buttons.js
+// @updateURL    https://github.com/Jarflux/tampermonkey-hubo/raw/master/redmine-agile-board-buttons.js
 // @grant        none
 // ==/UserScript==
 
