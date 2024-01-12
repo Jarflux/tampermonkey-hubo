@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - New Issue Template
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Redmine - buttons to prefill or append the ticket template to a new issue.
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/omnichannel-hubomat/issues/new*
