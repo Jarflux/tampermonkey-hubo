@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Agile Dashboard Buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @description  Redmine - Add links to preset filters
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/omnichannel-hubomat/agile/board*
