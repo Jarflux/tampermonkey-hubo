@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Agile Dashboard Buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Redmine - Add links to preset filters
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/omnichannel-hubomat/agile/board*
@@ -15,7 +15,9 @@
     'use strict';
 
     $(document).ready(function () {
-        colorAllTickets();
+        if(isMoscowEnabled() && isColoringOptionNone()){
+            colorAllTickets();
+        }
         $('#content')
             .find('h2')
             .after(createOverviewButton('Hybris', 'Omnichannel: Hybris'))
@@ -40,6 +42,14 @@
         btn.style.cssText = "margin:0 5px 5px 0;";
         btn.innerHTML = label;
         return btn;
+    }
+
+    function isMoscowEnabled(){
+        return $(":checkbox[value=cf_65]").is(":checked") && $( "#color_base option:selected" ).val()=="none";
+    }
+
+    function isColoringOptionNone(){
+        return $("#color_base option:selected").val()=="none";
     }
 
     function colorAllTickets(){
