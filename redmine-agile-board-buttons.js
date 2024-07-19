@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Redmine - Agile Dashboard Buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  Redmine - Add links to preset filters
 // @author       Ben Oeyen
-// @match        https://redmine.hubo.be/projects/omnichannel-hubomat/agile/board*
+// @match        https://redmine.hubo.be/projects/*/agile/board*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=hubo.be
 // @downloadURL  https://github.com/Jarflux/tampermonkey-hubo/raw/master/redmine-agile-board-buttons.js
 // @updateURL    https://github.com/Jarflux/tampermonkey-hubo/raw/master/redmine-agile-board-buttons.js
@@ -20,19 +20,23 @@
         }
         $('#content')
             .find('h2')
-            .after(createOverviewButton('Hybris', 'Omnichannel: Hybris'))
-            .after(createOverviewButton('Frontend', 'Omnichannel: Front-end'))
-            .after(createOverviewButton('Devops', 'Omnichannel: DevOps'))
-            .after(createOverviewButton('Cloud', 'Omnichannel: Cloud'))
-            .after(createOverviewButton('AEM', 'Omnichannel: AEM'));
+            .after(createOverviewButton('Hybris', 'omnichannel-hubomat', 'Omnichannel: Hybris'))
+            .after(createOverviewButton('Frontend', 'omnichannel-hubomat', 'Omnichannel: Front-end'))
+            .after(createOverviewButton('Devops', 'omnichannel-hubomat', 'Omnichannel: DevOps'))
+            .after(createOverviewButton('Cloud', 'omnichannel-hubomat', 'Omnichannel: Cloud'))
+            .after(createOverviewButton('AEM', 'omnichannel-hubomat', 'Omnichannel: AEM'))
+            .after(createOverviewButton('Hubo App', 'huboapp', null))
+            .after(createOverviewButton('All Teams', 'omnichannel-hubomat', null));
     });
 
-    function createOverviewButton(buttonName, team) {
+    function createOverviewButton(buttonName, project, team) {
         var btn = getButton(buttonName + " overview");
         btn.onclick = () => {
-            location.href = 'https://redmine.hubo.be/projects/omnichannel-hubomat/agile/board?utf8=%E2%9C%93&set_filter=1&f%5B%5D=status_id&op%5Bstatus_id%5D=%3D&v%5Bstatus_id%5D%5B%5D=12&v%5Bstatus_id%5D%5B%5D=15&v%5Bstatus_id%5D%5B%5D=26&v%5Bstatus_id%5D%5B%5D=10&v%5Bstatus_id%5D%5B%5D=3&f%5B%5D=cf_62&op%5Bcf_62%5D=%3D&v%5Bcf_62%5D%5B%5D='
-                + team
-                + '&f%5B%5D=&c%5B%5D=tracker&c%5B%5D=assigned_to&c%5B%5D=cf_65&group_by=priority&color_base=none';
+            var url = 'https://redmine.hubo.be/projects/' + project + '/agile/board?utf8=✓&set_filter=1&f[]=status_id&op[status_id]==&v[status_id][]=12&v[status_id][]=15&v[status_id][]=26&v[status_id][]=10&v[status_id][]=3&v[status_id][]=4&f[]='
+            if (team) {
+                url = url + 'cf_62&op[cf_62]==&v[cf_62][]=' + team + '&f[]='
+            }
+            location.href = url + '&c[]=tracker&c[]=assigned_to&c[]=cf_65&group_by=priority&color_base=none';
         };
         return btn;
     }
@@ -45,11 +49,11 @@
     }
 
     function isMoscowEnabled(){
-        return $(":checkbox[value=cf_65]").is(":checked") && $( "#color_base option:selected" ).val()=="none";
+        return $(":checkbox[value=cf_65]").is(":checked") && $( "#color_base option:selected" ).val()==="none";
     }
 
     function isColoringOptionNone(){
-        return $("#color_base option:selected").val()=="none";
+        return $("#color_base option:selected").val()==="none";
     }
 
     function colorAllTickets(){
