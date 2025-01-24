@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - New Issue Template
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Redmine - buttons to prefill or append the ticket template to a new issue.
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/*/issues/new*
@@ -21,6 +21,7 @@
             .after(fillBugTemplateButton())
             .after(appendTicketTemplateButton())
             .after(fillTicketTemplateButton());
+        hideUnusedFields();
     });
 
     function fillTicketTemplateButton() {
@@ -100,6 +101,30 @@
     function fillTracker(trackerTypeId){
         var tracker = $('#issue_tracker_id');
         tracker.val(trackerTypeId);
+    }
+
+    function hideUnusedFields() {
+        hideField('issue_start_date'); // Startdatum
+        hideField('issue_due_date'); // Verwachtte gereed datum
+        hideField('issue_estimated_hours'); // Geschatte Tijd
+        hideField('issue_done_ratio'); // % Gereed
+        hideField('issue_custom_field_values_54'); // Omnichannel Omgeving
+        hideField('issue_custom_field_values_112'); // Verantwoordelijke Omnichannel
+        hideField('issue_custom_field_values_108'); // Overkoepelend Project
+        if(!userIsBartLienOrTom()){
+            hideField('issue_custom_field_values_111'); // Release Versie
+        }
+    }
+
+    function hideField(fieldId) {
+        $('#' + fieldId).parent().hide();
+    }
+
+    function userIsBartLienOrTom(){
+        var loggedInUser = $('#loggedas > a').attr('href');
+        return loggedInUser === '/users/377' // Bart
+            || loggedInUser === '/users/551' // Lien
+            || loggedInUser === '/users/10' // Tom van Damme
     }
 
     function getTicketTemplate(){

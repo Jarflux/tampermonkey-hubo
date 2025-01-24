@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Ticket buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @description  Redmine - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/issues/*
@@ -21,6 +21,7 @@
             .after(newTicketAnnouncementButton())
             .after(gitBranchButton())
             .after(commitButton());
+        hideUnusedFields();
     });
 
     function gitBranchButton() {
@@ -121,6 +122,30 @@
         GM_setClipboard(announcement);
         GM_log("Copied new ticket announcement to clipboard");
         return announcement;
+    }
+
+    function hideUnusedFields() {
+        hideField('issue_start_date'); // Startdatum
+        hideField('issue_due_date'); // Verwachtte gereed datum
+        hideField('issue_estimated_hours'); // Geschatte Tijd
+        hideField('issue_done_ratio'); // % Gereed
+        hideField('issue_custom_field_values_54'); // Omnichannel Omgeving
+        hideField('issue_custom_field_values_112'); // Verantwoordelijke Omnichannel
+        hideField('issue_custom_field_values_108'); // Overkoepelend Project
+        if(!userIsBartLienOrTom()){
+            hideField('issue_custom_field_values_111'); // Release Versie
+        }
+    }
+
+    function hideField(fieldId) {
+        $('#' + fieldId).parent().hide();
+    }
+
+    function userIsBartLienOrTom(){
+        var loggedInUser = $('#loggedas > a').attr('href');
+        return loggedInUser === '/users/377' // Bart
+            || loggedInUser === '/users/551' // Lien
+            || loggedInUser === '/users/10' // Tom van Damme
     }
 
 }).bind(this)(jQuery);
