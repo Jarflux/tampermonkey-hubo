@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - New Issue Template
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  Redmine - buttons to prefill or append the ticket template to a new issue.
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/*/issues/new*
@@ -106,7 +106,6 @@
     function hideUnusedFields() {
         hideField('issue_start_date'); // Startdatum
         hideField('issue_due_date'); // Verwachtte gereed datum
-        hideField('issue_estimated_hours'); // Geschatte Tijd
         hideField('issue_done_ratio'); // % Gereed
         hideField('issue_custom_field_values_54'); // Omnichannel Omgeving
         hideField('issue_custom_field_values_112'); // Verantwoordelijke Omnichannel

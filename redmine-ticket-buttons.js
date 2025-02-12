@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Ticket buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @description  Redmine - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/issues/*
@@ -127,7 +127,6 @@
     function hideUnusedFields() {
         hideField('issue_start_date'); // Startdatum
         hideField('issue_due_date'); // Verwachtte gereed datum
-        hideField('issue_estimated_hours'); // Geschatte Tijd
         hideField('issue_done_ratio'); // % Gereed
         hideField('issue_custom_field_values_54'); // Omnichannel Omgeving
         hideField('issue_custom_field_values_112'); // Verantwoordelijke Omnichannel
