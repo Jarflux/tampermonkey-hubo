@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Ticket buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @description  Redmine - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/issues/*
@@ -23,6 +23,14 @@
             .after(commitButton());
         hideUnusedFields();
     });
+
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutationRecord) {
+            hideUnusedFields();
+        });
+    });
+    var target = document.getElementById('ajax-indicator');
+    observer.observe(target, { attributes : true, attributeFilter : ['style'] });
 
     function gitBranchButton() {
         var btn = getButton("GIT Branch Name");
@@ -125,6 +133,7 @@
     }
 
     function hideUnusedFields() {
+        $('fieldset.tabular:nth-child(2)').hide(); // TijdsRegistratie Blok
         hideField('issue_start_date'); // Startdatum
         hideField('issue_due_date'); // Verwachtte gereed datum
         hideField('issue_done_ratio'); // % Gereed

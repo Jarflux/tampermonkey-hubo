@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - New Issue Template
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Redmine - buttons to prefill or append the ticket template to a new issue.
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/*/issues/new*
@@ -23,6 +23,14 @@
             .after(fillTicketTemplateButton());
         hideUnusedFields();
     });
+
+    var observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutationRecord) {
+            hideUnusedFields();
+        });
+    });
+    var target = document.getElementById('ajax-indicator');
+    observer.observe(target, { attributes : true, attributeFilter : ['style'] });
 
     function fillTicketTemplateButton() {
         var btn = getButton("Fill Ticket Template");
@@ -174,4 +182,5 @@
             + '*Technical Details*\n\n'
             + '(technical details)\n\n'
     }
+
 })();
