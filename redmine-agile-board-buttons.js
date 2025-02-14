@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Redmine - Agile Dashboard Buttons
 // @namespace    http://tampermonkey.net/
-// @version      1.5
+// @version      1.6
 // @description  Redmine - Add links to preset filters
 // @author       Ben Oeyen
 // @match        https://redmine.hubo.be/projects/*/agile/board*
@@ -20,12 +20,13 @@
         }
         $('#content')
             .find('h2')
+            .after(createOverviewButton('App Betatest', 'huboapp', null))
+            .after(createOverviewButton('Unlockd', 'omnichannel-hubomat', 'Unlockd'))
             .after(createOverviewButton('Hybris', 'omnichannel-hubomat', 'Omnichannel: Hybris'))
             .after(createOverviewButton('Frontend', 'omnichannel-hubomat', 'Omnichannel: Front-end'))
             .after(createOverviewButton('Devops', 'omnichannel-hubomat', 'Omnichannel: DevOps'))
             .after(createOverviewButton('Cloud', 'omnichannel-hubomat', 'Omnichannel: Cloud'))
             .after(createOverviewButton('AEM', 'omnichannel-hubomat', 'Omnichannel: AEM'))
-            .after(createOverviewButton('Hubo App', 'huboapp', null))
             .after(createOverviewButton('All Teams', 'omnichannel-hubomat', null));
     });
 
