@@ -29,6 +29,9 @@ To automate some processes in Redmine we created a couple of tampermonkey script
 - Adds a button to copy a commit message to the clipboard.
 - Adds a button to copy the agreed branch name format to the clipboard.
 - Adds a button to copy a Ticket Announcement to the clipboard for slack.
+  
+### Microsoft Login Favicons
+- Adds a favicon logo per account based on the domain of the account.
 
 # Contribute
 - If changes are made, inform the team so scripts can be updated on everyone's machine.

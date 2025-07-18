@@ -1,11 +1,13 @@
 // ==UserScript==
-// @name         Improve Microsoft Login
+// @name         Microsoft - Login Favicons
 // @namespace    http://tampermonkey.net/
+// @description  Microsoft - Adds a favicon logo per account based on the domain of the account.
 // @version      1.0
-// @description  Set company image per microsoft account based on email suffix
 // @author       Ben Oeyen
 // @match        https://login.microsoftonline.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=microsoft.com
+// @downloadURL  https://github.com/Jarflux/tampermonkey-hubo/raw/master/microsoft-login-favicon.js
+// @updateURL    https://github.com/Jarflux/tampermonkey-hubo/raw/master/microsoft-login-favicon.js
 // @grant        none
 // ==/UserScript==
 
@@ -54,7 +56,7 @@
         });
     }
 
-    // --- Get company by matching suffix ---
+    // --- Get email suffix from account email ---
     function getEmailSuffix(dataTestId) {
         const atIndex = dataTestId.lastIndexOf("@");
         if (atIndex === -1) return null;
