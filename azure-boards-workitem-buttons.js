@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Azure Boards - Workitem Buttons
 // @namespace    https://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @author       Ben Oeyen
 // @description  Azure Boards - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
 // @match        https://dev.azure.com/*/_workitems/edit/*
@@ -14,36 +14,39 @@
 // @grant        GM_addStyle
 // ==/UserScript==
 
-(function($) {
+(function ($) {
     'use strict'
 
     const BUTTON_ID = "extra-btn";
 
-    function addButtonsToWorkItem(){
+    function addButtonsToWorkItem() {
         if (document.getElementById(BUTTON_ID)) return;
 
         // Where to inject the button
         const container = document.querySelector(".work-item-header-command-bar");
 
         if (!container) return;
-        container.prepend(newTicketAnnouncementButton());
-        container.prepend(commitButton());
-        container.prepend(gitBranchButton());
+
+        if (getWorkItemId()) {
+            container.prepend(newTicketAnnouncementButton(false));
+            container.prepend(commitButton(false));
+            container.prepend(gitBranchButton(false));
+        }
     }
 
-    function gitBranchButton() {
-        return createButton("Copy Branch Name", "ms-Icon--OpenSource", getBranchName());
+    function gitBranchButton(disabled) {
+        return createButton("Copy Branch Name", "ms-Icon--OpenSource", getBranchName, disabled);
     }
 
-    function newTicketAnnouncementButton() {
-        return createButton("Copy Ticket Announcement", "ms-Icon--Megaphone", getTicketAnnouncement());
+    function newTicketAnnouncementButton(disabled) {
+        return createButton("Copy Ticket Announcement", "ms-Icon--Megaphone", getTicketAnnouncement, disabled);
     }
 
-    function commitButton() {
-        return createButton("Copy Commit message", "ms-Icon--BranchCommit", getCommitMessage());
+    function commitButton(disabled) {
+        return createButton("Copy Commit message", "ms-Icon--BranchCommit", getCommitMessage, disabled);
     }
 
-    function createButton(buttonText,icon,textToCopy) {
+    function createButton(buttonText, icon, textToCopy) {
         const btn = document.createElement("button");
         btn.id = BUTTON_ID;
 
@@ -74,11 +77,10 @@
 
         // Click handler
         btn.addEventListener("click", () => {
-            GM_setClipboard(textToCopy);
+            GM_setClipboard(textToCopy());
             text.textContent = "Copied!";
             setTimeout(() => (text.textContent = buttonText), 1000);
         });
-
         return btn;
     }
 
@@ -89,14 +91,14 @@
         return `feature/${id}-${sanitizeTitle(title)}`;
     }
 
-    function getTicketAnnouncement(){
+    function getTicketAnnouncement() {
         const link = document.querySelector("div.work-item-form-header a")
         const href = link?.href;
         const type = link?.innerHTML;
         return "[" + type + "] " + getWorkItemTitle() + " - " + href;
     }
 
-    function getCommitMessage(){
+    function getCommitMessage() {
         return "#" + getWorkItemId() + ": " + getWorkItemTitle();
     }
 
@@ -109,23 +111,15 @@
     }
 
     function getWorkItemId() {
-        // URL patterns handle:
-        // /_workitems/edit/1234
-        // /?workitem=1234
-        const idFromEdit = window.location.pathname.match(/_workitems\/edit\/(\d+)/);
-        if (idFromEdit) return idFromEdit[1];
-
-        const params = new URLSearchParams(window.location.search);
-        const workItemId = params.get("workitem");
-        console.log("Workitem ID:" + workItemId);
-        return workItemId;
+        const workItemId = document.querySelector('.work-item-title-textfield').parentElement.parentElement.parentElement.innerText;
+        // console.log("WorkItem Id:" + workItemId);
+        return workItemId ?? null;
     }
 
     function getWorkItemTitle() {
-        // Azure Boards typical title selector
         const el = document.querySelector('.work-item-title-textfield input');
         const title = el?.value?.trim();
-        console.log("WorkItem Title:" + title);
+        // console.log("WorkItem Title:" + title);
         return title ?? null;
     }
 
@@ -134,8 +128,11 @@
             addButtonsToWorkItem();
         });
 
-        observer.observe(document.body, { childList: true, subtree: true });
-        addButtonsToWorkItem();
+        navigation.addEventListener("navigate", (event) => {
+            addButtonsToWorkItem();
+        });
+
+        observer.observe(document.body, {childList: true, subtree: true});
     }
 
     start();
