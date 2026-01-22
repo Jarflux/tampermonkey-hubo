@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Azure Boards - Workitem Buttons
 // @namespace    https://tampermonkey.net/
-// @version      1.2
+// @version      1.3
 // @author       Ben Oeyen
 // @description  Azure Boards - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
 // @match        https://dev.azure.com/*/_workitems/edit/*
@@ -18,6 +18,31 @@
     'use strict'
 
     const BUTTON_ID = "extra-btn";
+
+    function updateCards() {
+        // Loop through all cards with data-itemid attribute
+        const cards = document.querySelectorAll('div[data-itemid]');
+
+        cards.forEach(card => {
+            // Find the title text span
+            const titleSpan = card.querySelector('.title-text');
+
+            if (!titleSpan) return;
+
+            // Get the color from the title span style
+            const titleColor = titleSpan.style.color;
+
+            // Apply the color to the card flag
+            const flag = card.querySelector('.card-flag');
+            if (flag && titleColor) {
+                flag.style.backgroundColor = titleColor;
+            }
+
+            // Remove bold and color from title text
+            titleSpan.style.fontWeight = 'normal';
+            titleSpan.style.color = '';
+        });
+    }
 
     function addButtonsToWorkItem() {
         if (document.getElementById(BUTTON_ID)) return;
@@ -126,10 +151,12 @@
     function start() {
         const observer = new MutationObserver(() => {
             addButtonsToWorkItem();
+            updateCards();
         });
 
         navigation.addEventListener("navigate", (event) => {
             addButtonsToWorkItem();
+            updateCards();
         });
 
         observer.observe(document.body, {childList: true, subtree: true});
