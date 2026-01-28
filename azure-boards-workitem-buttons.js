@@ -1,12 +1,10 @@
 // ==UserScript==
 // @name         Azure Boards - Workitem Buttons
 // @namespace    https://tampermonkey.net/
-// @version      1.3
+// @version      1.4
 // @author       Ben Oeyen
 // @description  Azure Boards - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
-// @match        https://dev.azure.com/*/_workitems/edit/*
-// @match        https://dev.azure.com/*/_boards/board/*
-// @match        https://dev.azure.com/*/Boards/*
+// @match        https://dev.azure.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=https://az-icons.com/
 // @downloadURL  https://github.com/Jarflux/tampermonkey-hubo/raw/master/azure-boards-workitem-buttons.js
 // @updateURL    https://github.com/Jarflux/tampermonkey-hubo/raw/master/azure-boards-workitem-buttons.js
