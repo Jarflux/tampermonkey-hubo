@@ -1,10 +1,13 @@
 // ==UserScript==
 // @name         Salesforce - Environment Indicator Bar
 // @namespace    https://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @author       Ben Oeyen
 // @description  Salesforce - Adds a configurable environment indicator bar per URL
-// @match        https://*.my.salesforce.com/*
+// @match        https://huboforce--uat.sandbox.my.salesforce.com/*
+// @match        https://huboforce--uat.sandbox.lightning.force.com/*
+// @match        https://huboforce.my.salesforce.com/*
+// @match        https://huboforce.lightning.force.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=https://www.salesforce.com/
 // @downloadURL  https://github.com/Jarflux/tampermonkey-hubo/raw/master/salesforce-env-indicator.js
 // @updateURL    https://github.com/Jarflux/tampermonkey-hubo/raw/master/salesforce-env-indicator.js
@@ -16,18 +19,17 @@
 
     /**
      * CONFIGURATION
-     * Add your 4 URLs here.
      * `match` can be a string or RegExp
      * `color` is the environment color
      */
     const ENVIRONMENTS = [
         {
-            match: /huboforce--uat.sandbox.my.salesforce.com/,
+            match: /https:\/\/huboforce--uat./,
             color: 'deeppink',
             label: 'UAT',
         },
         {
-            match: /huboforce.my.salesforce.com/,
+            match: /https:\/\/huboforce./,
             color: 'red',
             label: 'PROD',
         },
