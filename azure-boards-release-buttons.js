@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Azure Boards - Release Copy Button
 // @namespace    https://tampermonkey.net/
-// @version      1.0
+// @version      1.1
 // @author       Ben Oeyen
 // @description  Azure Boards - Copy the release version and link to release pipeline to clipboard
 // @match        https://dev.azure.com/*
@@ -21,22 +21,15 @@
         rows.forEach(row => {
             if (row.dataset.copyButtonAdded) return;
 
-            const branchEl = row.querySelector('.branch-name-container span');
-            if (!branchEl) return;
-
-            const branchText = branchEl.textContent.trim();
-            if (!branchText.includes('release/')) return;
+            const versionEl = row.querySelector('.artifact-version-container a, .artifact-version-container span');
+            if (!versionEl) return;
+            const versionText = versionEl.textContent.trim();
+            if (!versionText.includes('-rc') || versionText.includes('-snapshot')) return;
 
             const releaseLinkEl = row.querySelector('.active-release-name');
-            const artifactLinkEl = row.querySelector('.active-release-artifact-url');
-
-            if (!releaseLinkEl || !artifactLinkEl) return;
-
+            if (!releaseLinkEl) return;
             const releaseName = releaseLinkEl.textContent.trim();
             const releaseHref = releaseLinkEl.getAttribute('href');
-
-            const artifactVersion = artifactLinkEl.textContent.trim();
-
             // Build full URL
             const fullUrl = `https://dev.azure.com${releaseHref}`;
 
@@ -58,7 +51,7 @@
             button.addEventListener('click', (e) => {
                 e.stopPropagation();
 
-                const textToCopy = `${artifactVersion} | [${releaseName}](${fullUrl})`;
+                const textToCopy = `${versionText} | [${releaseName}](${fullUrl})`;
 
                 navigator.clipboard.writeText(textToCopy).then(() => {
                     const textSpan = button.querySelector('.bolt-button-text');
