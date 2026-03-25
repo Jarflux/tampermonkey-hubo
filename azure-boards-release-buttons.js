@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Azure Boards - Release Copy Button
 // @namespace    https://tampermonkey.net/
-// @version      1.1
+// @version      1.2
 // @author       Ben Oeyen
 // @description  Azure Boards - Copy the release version and link to release pipeline to clipboard
 // @match        https://dev.azure.com/*
@@ -24,7 +24,7 @@
             const versionEl = row.querySelector('.artifact-version-container a, .artifact-version-container span');
             if (!versionEl) return;
             const versionText = versionEl.textContent.trim();
-            if (!versionText.includes('-rc') || versionText.includes('-snapshot')) return;
+            if ((!versionText.includes('-rc') && !versionText.includes('release')) || versionText.includes('-snapshot') || versionText.includes('develop')) return;
 
             const releaseLinkEl = row.querySelector('.active-release-name');
             if (!releaseLinkEl) return;
@@ -45,7 +45,7 @@
                 <span class="fluent-icons-enabled">
                     <span class="left-icon flex-noshrink fabric-icon ms-Icon--Copy medium"></span>
                 </span>
-                <span class="bolt-button-text body-m">Copy for release document</span>
+                <span class="bolt-button-text body-m">Copy Wiki Release</span>
             `;
 
             button.addEventListener('click', (e) => {
@@ -57,7 +57,7 @@
                     const textSpan = button.querySelector('.bolt-button-text');
                     textSpan.textContent = 'Copied!';
                     setTimeout(() => {
-                        textSpan.textContent = 'Copy for release document';
+                        textSpan.textContent = 'Copy Wiki Release';
                     }, 1500);
                 });
             });
