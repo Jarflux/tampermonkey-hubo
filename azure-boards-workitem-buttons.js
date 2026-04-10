@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         Azure Boards - Workitem Buttons
 // @namespace    https://tampermonkey.net/
-// @version      1.4
+// @version      1.5
 // @author       Ben Oeyen
-// @description  Azure Boards - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard
+// @description  Azure Boards - Generate GIT branch, Commit message and Ticket Announcement and copy to clipboard, Order Discussions,..
 // @match        https://dev.azure.com/*
 // @icon         https://www.google.com/s2/favicons?sz=64&domain=https://az-icons.com/
 // @downloadURL  https://github.com/Jarflux/tampermonkey-hubo/raw/master/azure-boards-workitem-buttons.js
@@ -58,15 +58,15 @@
     }
 
     function gitBranchButton(disabled) {
-        return createButton("Copy Branch Name", "ms-Icon--OpenSource", getBranchName, disabled);
+        return createButton("Copy Branch Name", "ms-Icon--OpenSource", getBranchName);
     }
 
     function newTicketAnnouncementButton(disabled) {
-        return createButton("Copy Ticket Announcement", "ms-Icon--Megaphone", getTicketAnnouncement, disabled);
+        return createButton("Copy Ticket Announcement", "ms-Icon--Megaphone", getTicketAnnouncement);
     }
 
     function commitButton(disabled) {
-        return createButton("Copy Commit message", "ms-Icon--BranchCommit", getCommitMessage, disabled);
+        return createButton("Copy Commit message", "ms-Icon--BranchCommit", getCommitMessage);
     }
 
     function createButton(buttonText, icon, textToCopy) {
@@ -135,26 +135,123 @@
 
     function getWorkItemId() {
         const workItemId = document.querySelector('.work-item-title-textfield').parentElement.parentElement.parentElement.innerText;
-        // console.log("WorkItem Id:" + workItemId);
         return workItemId ?? null;
     }
 
     function getWorkItemTitle() {
         const el = document.querySelector('.work-item-title-textfield input');
         const title = el?.value?.trim();
-        // console.log("WorkItem Title:" + title);
         return title ?? null;
+    }
+
+    // Discussion Order Toggle
+    const STORAGE_KEY = 'tampermonkey-discussion-order';
+
+    function getPreference() {
+        if(!localStorage.getItem(STORAGE_KEY)){
+            setPreference('old-first');
+        }
+        return localStorage.getItem(STORAGE_KEY);
+    }
+
+    function setPreference(value) {
+        localStorage.setItem(STORAGE_KEY, value);
+    }
+
+    function reverseComments() {
+        if(shouldReverseComments()){
+            const container = document.querySelector('[id^="__bolt-Discussion"]');
+            if (container){
+                // Only select comment items, not other elements like buttons
+                const comments = Array.from(container.querySelectorAll('.comment-item'));
+                if (!comments.length) return
+
+                // Re-append in reverse order
+                comments.reverse().forEach(el => container.appendChild(el));
+                currentState = getPreference();
+            }
+        }
+        firstLoad = false;
+    }
+
+    function createDiscussionOrderButton() {
+        const btn = document.createElement('button');
+
+        btn.id = 'tampermonkey-order-btn';
+        btn.className ='work-item-form-toggle-order work-item-form-toggle bolt-button bolt-icon-button enabled subtle icon-only bolt-focus-treatment';
+        btn.setAttribute('role', 'button');
+        btn.setAttribute('tabindex', '0');
+        btn.type = 'button';
+
+        const spanIconWrapper = document.createElement('span');
+        spanIconWrapper.className = 'fluent-icons-enabled';
+
+        const icon = document.createElement('span');
+        icon.className = 'left-icon flex-noshrink fabric-icon ms-Icon--Filter medium';
+        icon.style.transition = 'transform 0.2s ease';
+
+        spanIconWrapper.appendChild(icon);
+        btn.appendChild(spanIconWrapper);
+
+        function updateIconAndLabel() {
+            const pref = getPreference();
+            btn.setAttribute('aria-label', pref === 'new-first' ? 'Newest first' : 'Oldest first');
+            icon.style.transform = pref === 'old-first' ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        btn.onclick = (event) => {
+            event.stopPropagation();
+            const next = getPreference() === 'new-first' ? 'old-first' : 'new-first';
+            setPreference(next);
+            reverseComments();
+            updateIconAndLabel();
+        };
+
+        updateIconAndLabel();
+        return btn;
+    }
+
+    function addButtonToDiscussionControls() {
+        if (document.getElementById('tampermonkey-order-btn')) return true;
+
+        const controls = document.querySelector('.work-item-form-discussion .work-item-form-section-controls');
+        if (!controls) return false;
+
+        const btn = createDiscussionOrderButton();
+        controls.insertBefore(btn, controls.firstChild);
+    }
+
+    let currentState = "new-first";
+    let firstLoad = true;
+
+    function shouldReverseComments(){
+        if(firstLoad && getPreference() === 'old-first'){
+            return true;
+        }
+        return getPreference() !== currentState;
+    }
+
+    function initDiscussionOrder() {
+        if(firstLoad){
+            var buttonCreated = addButtonToDiscussionControls();
+            if(buttonCreated) {
+                reverseComments()
+            }
+        }
     }
 
     function start() {
         const observer = new MutationObserver(() => {
             addButtonsToWorkItem();
             updateCards();
+            initDiscussionOrder();
         });
 
         navigation.addEventListener("navigate", (event) => {
+            firstLoad = true;
             addButtonsToWorkItem();
             updateCards();
+            initDiscussionOrder();
         });
 
         observer.observe(document.body, {childList: true, subtree: true});
